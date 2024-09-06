@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}  
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <title>Manage Employees</title>
+
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        /* Header styles */
+        header {
+            background-color: #333;
+            color: #fff;
+            padding: 20px;
+            text-align: center;
+        }
+        header h1 {
+            margin: 0;
+        }
+        /* Main content styles */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        h2 {
+            margin-top: 0;
+        }
+        /* Form styles */
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 700;
+        }
+        input[type="text"],
+        input[type="email"],
+        input[type="date"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+   
+        select {
+            width: 100%;
+        }
+        button {
+            background-color: #333;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background-color: #555;
+        }
+        /* Table styles */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+        .modal-content {
+            background-color: #fefefe;
+            margin: 10% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 5px;
+        }
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+         /* Adjust the image preview container size */
+    .image-preview {
+        max-width: 100%; /* Ensure it doesn't exceed parent container width */
+        max-height: 200px; /* Limit the height to maintain aspect ratio */
+        margin-bottom: 10px; /* Optional: Space between image and file input */
+        overflow: hidden; /* Hide overflow to prevent distortion */
+    }
+
+    .image-preview img {
+        width: 100%; /* Ensure the image takes full width of its container */
+        height: auto; /* Maintain aspect ratio */
+        display: block; /* Ensure image behaves as block element */
+    }
+    </style>
+    
+</head>
+<body>
+    {% include 'admin/admin_sidebar.html' %}
+    <div id="main-content" class="main-content">
+        <h2>Manage Employees</h2>
+        <button id="addEmployeeBtn">Add Employee</button>
+
+        <h1>Webcam Example</h1>
+        <button id="openCameraBtn">Open Camera</button>
+        <video id="webcam" width="640" height="480" autoplay></video>
+        <script>
+            document.getElementById('openCameraBtn').addEventListener('click', function() {
+                navigator.mediaDevices.getUserMedia({ video: true })
+                .then(function(stream) {
+                    let video = document.getElementById('webcam');
+                    video.srcObject = stream;
+                    video.play();
+                })
+                .catch(function(err) {
+                    console.log("An error occurred: " + err);
+                });
+            });
+        </script>
+        
+        <!-- Add Employee Modal -->
+        <div id="addEmployeeModal" class="modal">
+            <div class="modal-content">
+                <span class="close" id="closeModal">&times;</span>
+                <h2>Add Employee</h2>
+                <div class="tab">
+                    <button class="tablinks" onclick="openTab(event, 'EmployeeInfo')" id="defaultOpen">Employee Information</button>
+                    <button class="tablinks" onclick="openTab(event, 'BankInfo')">Bank Information</button>
+                    <button class="tablinks" onclick="openTab(event, 'Salary')">Salary</button>
+                    <button class="tablinks" onclick="openTab(event, 'Contract')">Contract</button>
+                    <button class="tablinks" onclick="openTab(event, 'Document')">Document</button>
+                </div>
+
+                <div id="EmployeeInfo" class="tabcontent">
+                    <h3>Employee Information</h3>
+                    <form method="POST"  action="{% url 'add_employee' %}" enctype="multipart/form-data">
+                        {% csrf_token %}
+                       
+                        <div>
+                            <label for="id_employee_id">Employee ID:</label>
+                            {{ employee_form.employee_id }}
+                        </div>
+                        <div>
+                            <label for="id_employee_picture">Employee Picture:</label>
+                            {{ employee_form.image }}
+                        </div>
+                        <div>
+                            <label for="id_first_name">First Name:</label>
+                            {{ employee_form.first_name }}
+                        </div>
+                        <div>
+                            <label for="id_middle_name">Middle Name:</label>
+                            {{ employee_form.middle_name }}
+                        </div>
+                        <div>
+                            <label for="id_last_name">Last Name:</label>
+                            {{ employee_form.last_name }}
+                        </div>
+                        <div>
+                            <label for="id_suffix">Suffix:</label>
+                            {{ employee_form.suffix }}
+                        </div>
+                        <div>
+                            <label for="id_email">Email:</label>
+                            {{ employee_form.email }}
+                        </div>
+                        <div>
+                            <label for="id_date_of_birth">Date of Birth:</label>
+                            {{ employee_form.date_of_birth }}
+                        </div>
+                        <div>
+                            <label for="id_place_of_birth">Place of Birth:</label>
+                            {{ employee_form.place_of_birth }}
+                        </div>
+                        <div>
+                            <label for="id_age">Age:</label>
+                            {{ employee_form.age }}
+                        </div>
+                        <div>
+                            <label for="id_contact_number">Contact Number:</label>
+                            {{ employee_form.contact_number }}
+                        </div>
+
+                        <div>
+                            <label for="id_religion">Religion:</label>
+                            {{ employee_form.religion }}
+                        </div>
+                        <div>
+                            <label for="id_civil_status">Civil Status:</label>
+                            {{ employee_form.civil_status }}
+                        </div>
+                        <div>
+                            <label for="id_barangay">Barangay:</label>
+                            {{ employee_form.barangay }}
+                        </div>
+                        <div>
+                            <label for="id_city">City:</label>
+                            {{ employee_form.city }}
+                        </div>
+                        <div>
+                            <label for="id_house_number">House Number: </label>
+                            {{ employee_form.house_number }}
+                        </div>
+                        <div>
+                            <label for="id_country">Country: </label>
+                            {{ employee_form.country }}
+                        </div>
+                        <div>
+                            <label for="id_zip">Zip: </label>
+                            {{ employee_form.zip }}
+                        </div>
+                        <div>
+                            <label for="id_tin">TIN: </label>
+                            {{ employee_form.tin }}
+                        </div>
+
+                        
+                </div>       
+
+                <div id="BankInfo" class="tabcontent">
+                    <h3>Bank Information</h3>
+                        {{ bank_info_form.as_p }}
+                         
+                </div>
+
+              
+
+                <div id="Salary" class="tabcontent">
+                    <h3>Salary</h3>
+                
+                    {{ salary_form.as_p }}
+                </div>
+
+
+                <div id="Contract" class="tabcontent">
+                    <h3>Contract</h3>
+                    {{ contract_form.as_p }}
+                </div>
+
+                <div id="Document" class="tabcontent">
+                    <h3>Document</h3>
+                    {{ document_form.as_p }}
+                </div>
+
+
+
+                <button type="submit">Save 1</button>
+            </form>
+           
+            
+            </form>
+        </div>
+        </div>
+        <!-- Employee List -->
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Loop through employees and display them here -->
+                {% for employee in employees %}
+                <tr>
+                    <td>{{ employee.employee_id }}</td>
+                    <td>{{ employee.first_name }} {{ employee.last_name }}</td>
+                    <td>{{ employee.email }}</td>
+                    <td>
+                        <button onclick="openEditModal('{{ employee.employee_id }}')">Edit</button>
+                        <button>Delete</button>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <script>
+
+     
+
+        // Get the modal
+        var modal = document.getElementById("addEmployeeModal");
+
+        // Get the button that opens the modal
+        var btn = document.getElementById("addEmployeeBtn");
+
+        // Get the <span> element that closes the modal
+        var span = document.getElementById("closeModal");
+
+        // When the user clicks the button, open the modal
+        btn.onclick = function() {
+            modal.style.display = "block";
+        }
+
+        // When the user clicks on <span> (x), close the modal
+        span.onclick = function() {
+            modal.style.display = "none";
+        }
+
+        // When the user clicks anywhere outside of the modal, close it
+        window.onclick = function(event) {
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // For the preview of the image 
+        function previewImage(event) {
+            var reader = new FileReader();
+            reader.onload = function() {
+                var imgElement = document.createElement('img');
+                imgElement.src = reader.result;
+                var previewContainer = document.getElementById('imagePreview');
+                previewContainer.innerHTML = '';
+                previewContainer.appendChild(imgElement);
+            }
+            reader.readAsDataURL(event.target.files[0]);
+        }
+        // Function to open tabs
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+
+        document.addEventListener('DOMContentLoaded', (event) => {
+            document.getElementById("defaultOpen").click();
+        });
+
+        var editModal = document.getElementById("editEmployeeModal");
+
+     function openEditModal(employeeId) {
+        // Log the ID to the console to verify
+        console.log("Selected Employee ID:", employeeId);
+
+        // Make an AJAX request to fetch employee information based on the ID
+        // Example AJAX request:
+        $.ajax({
+            url: '/retrieve_employee_info/',
+            method: 'GET',
+            data: {'employee_id': employeeId},
+            success: function(response) {
+
+                if (response.success) {
+                    // Populate the edit modal with the fetched employee information
+                    var employeeInfo = response.employee_info;
+                    var countryList = response.country_list;  // Get the country list
+                    var bankInfo = response.bank_info;
+                    document.getElementById("editEmployeeId").value = employeeInfo.employee_id;
+                    document.getElementById("editFirstName").value = employeeInfo.first_name;
+                    document.getElementById("editMiddleName").value = employeeInfo.middle_name;
+                    document.getElementById("editLastName").value = employeeInfo.last_name;
+                    document.getElementById("editSuffix").value = employeeInfo.last_name;
+                    document.getElementById("editEmail").value = employeeInfo.email;
+                    document.getElementById("editDateOfBirth").value = employeeInfo.date_of_birth;
+                    document.getElementById("editPlaceOfBirth").value = employeeInfo.place_of_birth;
+
+                        // Populate the gender field
+                    if (employeeInfo.gender) {
+                        document.getElementById("editGender").value = employeeInfo.gender;
+                    } else {
+                        document.getElementById("editGender").value = '';
+                    }
+                    document.getElementById("editAge").value = employeeInfo.age;
+                    document.getElementById("editContactNumber").value = employeeInfo.contact_number;
+                    document.getElementById("editBarangay").value = employeeInfo.barangay;
+                    document.getElementById("editCity").value = employeeInfo.city;
+                    document.getElementById("editHouseNumber").value = employeeInfo.house_number;
+                    document.getElementById("editZip").value = employeeInfo.zip;
+                    document.getElementById("editTin").value = employeeInfo.tin;
+                    
+                    // document.getElementById("editHouseNumber").value = employeeInfo.house_number;
+                    
+                    // Populate Bank Information fields
+                    document.getElementById("editBankHolderName").value =bankInfo.bank_holder_name;
+                   
+                    document.getElementById("editBankName").value =bankInfo.bank_name;
+                    document.getElementById("editBranch").value =bankInfo.branch;
+                    document.getElementById("editAccountNumber").value =bankInfo.account_number;
+                            // Populate the gender field
+                    if (bankInfo.account_type) {
+                        document.getElementById("editAccountType").value = bankInfo.account_type;
+                    } else {
+                        document.getElementById("editAccountType").value = '';
+                    }
+                    
+                    // $('#bank_name').val(bankInfo.bank_name);
+                    // $('#branch').val(bankInfo.branch);
+                    // $('#account_number').val(bankInfo.account_number);
+                    // $('#account_type').val(bankInfo.account_type);
+
+                    var countrySelect = document.getElementById("editCountryField");
+                    countrySelect.innerHTML = '';  // Clear existing options
+                    countryList.forEach(function(country) {
+                        var option = document.createElement("option");
+                        option.value = country.pk;
+                        option.text = country.name;
+                        countrySelect.appendChild(option);
+                    });
+
+                    // Set the selected country
+                    if (employeeInfo.country_id) {
+                        countrySelect.value = employeeInfo.country_id;
+                    }
+                    // Populate the date field here 
+                    alert("KITA NA");
+                    // Open the edit modal
+                    editModal.style.display = "block";
+                } else {
+                    alert('Error: ' + response.error);
+                }
+            },
+            error: function(xhr, status, error) {
+                console.error('Error fetching employee information:', error);
+                alert('An error occurred while fetching employee information.');
+            }
+        });
+    }
+
+
+        // Handle form submission via AJAX
+        document.getElementById('employeeForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+        var form = this;
+        $.ajax({
+            url: form.action,
+            method: form.method,
+            data: $(form).serialize(),
+            success: function(response) {
+                if (response.success) {
+                    alert('Employee added successfully');
+                    // Optionally, close the modal and reset the form
+                    modal.style.display = 'none';
+                    form.reset();
+                    // Optionally, you can also refresh the employee list
+                    location.reload();
+                } else {
+                    alert('Error adding employee: ' + response.errors);
+                }
+            },
+            error: function(response) {
+                alert('An error occurred. Please check the console for details.');
+                console.log(response);
+            }
+        });
+    });
+
+    document.getElementById('editEmployeeModal').addEventListener('submit', function(event) {
+    event.preventDefault();
+
+    const form = event.target;
+    const formData = new FormData(form);
+    const action = form.getAttribute('action');
+
+    fetch(action, {
+        method: 'POST',
+        body: formData,
+        headers: {
+            'X-CSRFToken': form.querySelector('[name=csrfmiddlewaretoken]').value,
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            alert('Employee updated successfully.');
+            location.reload();
+        } else {
+            alert('An error occurred: ' + (data.errors || 'Unknown error'));
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        alert('An error occurred: ' + error);
+    });
+});
+    </script>
+</body>
+</html>

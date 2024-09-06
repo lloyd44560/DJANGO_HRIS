@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html>
+<head>
+    {% load static %}  <!-- Load the static template tag library -->
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script type="script" src="{% static 'js/sidebar.js' %}"></script>
+    <title>My Django Page</title>
+</head>
+<body>
+
+    {% include 'sidebar.html' %}
+    <div id="main-content" class="main-content">
+        {% block content %}{% endblock %}
+        <div class="dashboard">
+            <div class="panel">
+                <h2>Total Users</h2>
+                <!-- Content goes here -->
+            </div>
+            <div class="panel">
+                <h2>Total Roles</h2>
+                <!-- Content goes here -->
+            </div>
+            <div class="panel">
+                <h2>Total Employees</h2>
+                <!-- Content goes here -->
+            </div>
+            <div class="panel">
+                <h2>Total Company</h2>
+                <!-- Content goes here -->
+            </div>
+            <div class="panel">
+                <h2>Total Departments</h2>
+                <!-- Content goes here -->
+            </div>
+            <div class="panel">
+                <h2>Total Requests</h2>
+                <!-- Content goes here -->
+            </div>
+            <div class="panel">
+                <h2>Total Projects</h2>
+                <!-- Content goes here -->
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
+<style>
+       .dashboard {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            padding: 20px;
+        }
+
+        .panel {
+            background-color: #f3f3f3;
+            border-radius: 5px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            height: 100px;
+        }
+
+        .panel h2 {
+            margin: 0 0 10px;
+        }
+         /* Different background colors for each panel */
+        .panel:nth-child(1) { background-color: #ffebee; }
+        .panel:nth-child(2) { background-color: #fce4ec; }
+        .panel:nth-child(3) { background-color: #f3e5f5; }
+        .panel:nth-child(4) { background-color: #ede7f6; }
+        .panel:nth-child(5) { background-color: #e8eaf6; }
+        .panel:nth-child(6) { background-color: #e3f2fd; }
+        .panel:nth-child(7) { background-color: #e1f5fe; }
+
+        /* Hover effect */
+        .panel:hover {
+            transform: scale(1.03);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+        }
+</style>
